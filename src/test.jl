@@ -13,8 +13,9 @@ qam = orthogonalComposition(pam1, pam2)
 
 # scatter(real(qam.symbols), imag(qam.symbols))
 
-message = rand(1 : qam.M - 1, N)
+message = rand(0 : qam.M - 1, N)
 println(message)
 
 qamModulated = constellationMap(qam, message)
-scatter(real(qamModulated), imag(qamModulated))
+scatter(real(qam.symbols), imag(qam.symbols))
+scatter!(real(qamModulated), imag(qamModulated))
