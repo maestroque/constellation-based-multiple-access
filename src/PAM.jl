@@ -7,7 +7,7 @@ mutable struct M_PAM <: Constellation
     M::Integer
     Es::Float32
     Eg::Float32
-    symbols::Array{Float32}
+    symbols::Vector{Float32}
 
     function M_PAM(M, Es)
         Eg = 3 * Es / (M ^ 2 - 1)
@@ -21,7 +21,7 @@ end
 
 mutable struct M_QAM <: Constellation
     M::Integer
-    symbols::Array{ComplexF32}
+    symbols::Vector{ComplexF32}
 
     function M_QAM(M, symbols)
         new(M, symbols)
@@ -44,10 +44,10 @@ function orthogonalComposition(mPAM1::M_PAM, mPAM2::M_PAM)
     return qam
 end
 
-function constellationMap(c::Constellation, message)
+function constellationMap(c::Constellation, message::Vector{Int}, symbolMap::Vector{Int})
     modulated = zeros(ComplexF32, length(message))
     for (i, m) in enumerate(message)
-        modulated[i] = c.symbols[m]
+        modulated[i] = c.symbols[symbolMap[m]]
     end
 
     return modulated
