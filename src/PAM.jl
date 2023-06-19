@@ -19,6 +19,12 @@ function M_PAM(M, Es)
     M_PAM(M, Es, Eg, symbols)
 end
 
+function M_PAM(symbols)
+    Es = avgSymbolEnergy(symbols)
+    Eg = 3 * Es / (M ^ 2 - 1)
+    M_PAM(length(symbols), Es, Eg, symbols)
+end
+
 mutable struct M_QAM <: Constellation
     M::Integer
     symbols::Vector{ComplexF32}
@@ -29,6 +35,13 @@ function printConstellationMap(c::Constellation)
     display(p)
 end
 
+"""
+### Description
+Creates an orthogonal M₁*M₂-QAM constellation by composing
+two PAM constellations
+# Arguements
+- `mPAM1`, `mPAM2`: M_PAM constellation objects
+"""
 function orthogonalComposition(mPAM1::M_PAM, mPAM2::M_PAM)
     M = mPAM1.M * mPAM2.M
     symbols = zeros(ComplexF32, mPAM1.M * mPAM2.M)
@@ -41,10 +54,26 @@ function orthogonalComposition(mPAM1::M_PAM, mPAM2::M_PAM)
     return qam
 end
 
+"""
+### Description
+Creates an Μ²-QAM constellation by:
+- Rotating another M-QAM by an angle θ
+- Decomposing into 2 M-PAMs by projecting to each axis
+- Recomposing the 2 M-PAMs orthogonally into one Μ²-QAM
+# Arguements
+- `c::Constellation`: a M-QAM constellation
+- `θ::Real`: rotation angle
+"""
 function rotationComposition(c::Constellation, θ::Real)
     rotatedSymbols = c.symbols .* exp(im * θ)
     rotatedQAM = M_QAM(c.M, rotatedSymbols)
-    return rotatedQAM
+
+    mPAM1 = M_PAM(real.(rotatedSymbols))
+    mPAM2 = M_PAM(imag.(rotatedSymbols))
+
+    m2QAM = orthogonalComposition(mPAM1, mPAM2)
+
+    return m2QAM
 end
 
 function constellationMap(c::Constellation, message::Vector{Int}, symbolMap::Vector{Int})

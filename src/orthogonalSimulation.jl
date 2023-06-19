@@ -5,7 +5,7 @@ includet("utils.jl")
 
 a = 0.25
 M = 4
-messageLength = 500
+messageLength = 5000
 symbolMap = [13, 14, 15, 16, 9, 10, 11, 12, 5, 6, 7, 8, 1, 2, 3, 4]
 
 # Channel parameters
@@ -21,9 +21,6 @@ messageUser1 = rand(1 : pam1.M, messageLength)
 messageUser2 = rand(1 : pam2.M, messageLength)
 
 messageQAM = messageUser1 + (pam2.M .- messageUser2) * pam2.M
-
-# message = rand(1 : qam.M, messageLength)
-# println(message)
 
 qamModulated = constellationMap(qam, messageQAM, symbolMap)
 
@@ -44,17 +41,20 @@ for n in N0
 
     demodUser1 = MLD(pamUser1, pam1)
     demodUser2 = MLD(pamUser2, pam2)
-    # println(demodUser1, messageUser1)
 
     push!(SEP1, length(findall(!iszero, demodUser1 - messageUser1)) / length(messageUser1))
     push!(SEP2, length(findall(!iszero, demodUser2 - messageUser2)) / length(messageUser2))
 end
 
+# Remove zero-value SEP entries for log-scale plotting
 SEP1[SEP1 .< sepLimit ] .= sepLimit
 SEP2[SEP2 .< sepLimit ] .= sepLimit
 
-p = plot(SNR, SEP1, gridlinewidth=1, yaxis=(:log10, [sepLimit, :auto]), label="User₁ SEP")
-p = plot!(SNR, SEP2, gridlinewidth=1, yaxis=(:log10, [sepLimit, :auto]), label="User₂ SEP")
+p = plot(SNR, SEP1, gridlinewidth=1, yaxis=(:log10, [sepLimit, :auto]), 
+            label="User₁ SEP")
+p = plot!(SNR, SEP2, gridlinewidth=1, yaxis=(:log10, [sepLimit, :auto]), 
+            label="User₂ SEP", ylabel="SEP", xlabel="SNR (dB)",
+            title="Multiple Access SEP vs SNR for a=$a")
 display(p)
 
 
