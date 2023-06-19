@@ -3,60 +3,64 @@ using Plots
 includet("PAM.jl")
 includet("utils.jl")
 
-a = 0.25
-M = 4
-messageLength = 5000
-symbolMap = [13, 14, 15, 16, 9, 10, 11, 12, 5, 6, 7, 8, 1, 2, 3, 4]
+a = 0.6
 
-# Channel parameters
-c = 0.5
-N0 = 0
+function orthogonalSimulation(a, messageLength, print = true)
+    M = 4
+    symbolMap = [13, 14, 15, 16, 9, 10, 11, 12, 5, 6, 7, 8, 1, 2, 3, 4]
 
-pam1 = M_PAM(M, a)
-pam2 = M_PAM(M, 1 - a)
+    # Channel parameters
+    c = 0.5
+    N0 = 0
 
-qam = orthogonalComposition(pam1, pam2)
+    pam1 = M_PAM(M, a)
+    pam2 = M_PAM(M, 1 - a)
 
-messageUser1 = rand(1 : pam1.M, messageLength)
-messageUser2 = rand(1 : pam2.M, messageLength)
+    qam = orthogonalComposition(pam1, pam2)
 
-messageQAM = messageUser1 + (pam2.M .- messageUser2) * pam2.M
+    messageUser1 = rand(1 : pam1.M, messageLength)
+    messageUser2 = rand(1 : pam2.M, messageLength)
 
-qamModulated = constellationMap(qam, messageQAM, symbolMap)
+    messageQAM = messageUser1 + (pam2.M .- messageUser2) * pam2.M
 
-SNR = 0:1:20
-N0 = avgSymbolEnergy(qam) .* 10 .^ (-SNR/10)
+    qamModulated = constellationMap(qam, messageQAM, symbolMap)
 
-SEP1 = []
-SEP2 = []
-sepLimit = 10e-6
+    SNR = 0:1:20
+    N0 = avgSymbolEnergy(qam) .* 10 .^ (-SNR/10)
 
-# Simulation for range of SNR values
-for n in N0
-    qamUser1 = addNoise(qamModulated, 0, n / 2)
-    qamUser2 = addNoise(qamModulated, 0, c * n / 2)
+    SEP1 = []
+    SEP2 = []
+    sepLimit = 10e-6
 
-    pamUser1 = real(qamUser1)
-    pamUser2 = imag(qamUser2)
+    # Simulation for range of SNR values
+    for n in N0
+        qamUser1 = addNoise(qamModulated, 0, n / 2)
+        qamUser2 = addNoise(qamModulated, 0, c * n / 2)
 
-    demodUser1 = MLD(pamUser1, pam1)
-    demodUser2 = MLD(pamUser2, pam2)
+        pamUser1 = real(qamUser1)
+        pamUser2 = imag(qamUser2)
 
-    # By subtracting the decoded and original vectors, and finding
-    # the number of non-zero elements, the symbol error rate can be found
-    push!(SEP1, length(findall(!iszero, demodUser1 - messageUser1)) / length(messageUser1))
-    push!(SEP2, length(findall(!iszero, demodUser2 - messageUser2)) / length(messageUser2))
+        demodUser1 = MLD(pamUser1, pam1)
+        demodUser2 = MLD(pamUser2, pam2)
+
+        # By subtracting the decoded and original vectors, and finding
+        # the number of non-zero elements, the symbol error rate can be found
+        push!(SEP1, length(findall(!iszero, demodUser1 - messageUser1)) / length(messageUser1))
+        push!(SEP2, length(findall(!iszero, demodUser2 - messageUser2)) / length(messageUser2))
+    end
+
+    # Remove zero-value SEP entries for log-scale plotting
+    SEP1[SEP1 .< sepLimit ] .= sepLimit
+    SEP2[SEP2 .< sepLimit ] .= sepLimit
+    if print
+        p = plot(SNR, SEP1, gridlinewidth=1, yaxis=(:log10, [sepLimit, :auto]), 
+                    label="User₁ SEP")
+        p = plot!(SNR, SEP2, gridlinewidth=1, yaxis=(:log10, [sepLimit, :auto]), 
+                    label="User₂ SEP", ylabel="SEP", xlabel="SNR (dB)",
+                    title="Multiple Access SEP vs SNR for a=$a")
+        display(p)
+    end
+
+
+    return SEP1, SEP2
 end
-
-# Remove zero-value SEP entries for log-scale plotting
-SEP1[SEP1 .< sepLimit ] .= sepLimit
-SEP2[SEP2 .< sepLimit ] .= sepLimit
-
-p = plot(SNR, SEP1, gridlinewidth=1, yaxis=(:log10, [sepLimit, :auto]), 
-            label="User₁ SEP")
-p = plot!(SNR, SEP2, gridlinewidth=1, yaxis=(:log10, [sepLimit, :auto]), 
-            label="User₂ SEP", ylabel="SEP", xlabel="SNR (dB)",
-            title="Multiple Access SEP vs SNR for a=$a")
-display(p)
-
-

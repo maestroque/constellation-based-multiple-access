@@ -3,7 +3,7 @@ using Revise
 includet("PAM.jl")
 
 function addNoise(signal::Vector{<:Complex}, μ, σ)
-    d = Normal(μ, σ)
+    d = Normal(μ, σ / 2)
     n1 = zeros(length(signal))
     n2 = zeros(length(signal))
     rand!(d, n1)
