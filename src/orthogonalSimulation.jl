@@ -42,6 +42,8 @@ for n in N0
     demodUser1 = MLD(pamUser1, pam1)
     demodUser2 = MLD(pamUser2, pam2)
 
+    # By subtracting the decoded and original vectors, and finding
+    # the number of non-zero elements, the symbol error rate can be found
     push!(SEP1, length(findall(!iszero, demodUser1 - messageUser1)) / length(messageUser1))
     push!(SEP2, length(findall(!iszero, demodUser2 - messageUser2)) / length(messageUser2))
 end

@@ -10,7 +10,7 @@ mutable struct M_PAM <: Constellation
     symbols::Vector{Float32}
 end
 
-function M_PAM(M, Es)
+function M_PAM(M::Int, Es::Real)
     Eg = 3 * Es / (M ^ 2 - 1)
     symbols = zeros(M)
     for (i, s) in enumerate(symbols)
@@ -19,7 +19,7 @@ function M_PAM(M, Es)
     M_PAM(M, Es, Eg, symbols)
 end
 
-function M_PAM(symbols)
+function M_PAM(symbols::Vector{<:Real})
     Es = avgSymbolEnergy(symbols)
     Eg = 3 * Es / (M ^ 2 - 1)
     M_PAM(length(symbols), Es, Eg, symbols)
@@ -67,9 +67,9 @@ Creates an Μ²-QAM constellation by:
 function rotationComposition(c::Constellation, θ::Real)
     rotatedSymbols = c.symbols .* exp(im * θ)
     rotatedQAM = M_QAM(c.M, rotatedSymbols)
-
-    mPAM1 = M_PAM(real.(rotatedSymbols))
-    mPAM2 = M_PAM(imag.(rotatedSymbols))
+    
+    mPAM1 = M_PAM(sort(real.(rotatedSymbols)))
+    mPAM2 = M_PAM(sort(imag.(rotatedSymbols)))
 
     m2QAM = orthogonalComposition(mPAM1, mPAM2)
 
@@ -89,6 +89,6 @@ function avgSymbolEnergy(c::Constellation)
     return 1 / length(c.symbols) * (sum(abs2.(c.symbols)))
 end
 
-function avgSymbolEnergy(c::Vector{<:Complex})
+function avgSymbolEnergy(c::Vector{<:Number})
     return 1 / length(c) * (sum(abs2.(c)))
 end
