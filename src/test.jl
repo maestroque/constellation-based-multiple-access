@@ -13,13 +13,22 @@ pam2 = M_PAM(M, 1 - a)
 
 qam = orthogonalComposition(pam1, pam2)
 
+gr()
 # scatter(real(qam.symbols), imag(qam.symbols))
 
 message = rand(1 : qam.M, N)
-println(message)
+println(message .% 4)
 
 qamModulated = constellationMap(qam, message, symbolMap)
-scatter(real(qamModulated), imag(qamModulated), xlims=[-1, 1], ylims=[-2, 2])
+p = scatter(real(qamModulated), imag(qamModulated), xlims=[-1, 1], ylims=[-2, 2], gridlinewidth = 1)
 
 noisedSignal = addNoise(qamModulated, 0, 0.1)
-scatter!(real(noisedSignal), imag(noisedSignal), xlims=[-1, 1], ylims=[-2, 2])
+p = scatter!(real(noisedSignal), imag(noisedSignal), xlims=[-1, 1], ylims=[-2, 2], gridlinewidth = 1)
+# rot = rotationComposition(qam, π / 1000)
+# scatter!(real(rot), imag(rot))
+
+display(p)
+
+rx = real(noisedSignal)
+demod = MLD(rx, pam1)
+println(demod)
