@@ -61,6 +61,5 @@ function orthogonalSimulation(a, messageLength, print = true)
         display(p)
     end
 
-
     return SEP1, SEP2
 end

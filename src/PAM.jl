@@ -20,9 +20,10 @@ function M_PAM(M::Int, Es::Real)
 end
 
 function M_PAM(symbols::Vector{<:Real})
+    M = length(symbols)
     Es = avgSymbolEnergy(symbols)
     Eg = 3 * Es / (M ^ 2 - 1)
-    M_PAM(length(symbols), Es, Eg, symbols)
+    M_PAM(M, Es, Eg, sort(symbols))
 end
 
 mutable struct M_QAM <: Constellation

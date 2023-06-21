@@ -42,8 +42,9 @@ function rotationSimulation(θ, messageLength, print = true)
         pamUser1 = real(qamUser1)
         pamUser2 = imag(qamUser2)
 
-        demodUser1 = MLD(pamUser1, pam1)
-        demodUser2 = MLD(pamUser2, pam2)
+        # TODO: abstract this
+        demodUser1 = MLD(pamUser1, M_PAM(real(qam.symbols .* exp(im * θ))))
+        demodUser2 = MLD(pamUser2, M_PAM(imag(qam.symbols .* exp(im * θ))))
 
         push!(SEP1, length(findall(!iszero, demodUser1 - messageUser1)) / length(messageUser1))
         push!(SEP2, length(findall(!iszero, demodUser2 - messageUser2)) / length(messageUser2))
