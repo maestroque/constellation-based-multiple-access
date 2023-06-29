@@ -1,5 +1,6 @@
 using Revise
 using Plots
+
 includet("PAM.jl")
 includet("utils.jl")
 
@@ -11,12 +12,13 @@ function orthogonalSimulation(a, messageLength, print = true)
 
     # Channel parameters
     c = 0.5
-    N0 = 0
 
     pam1 = M_PAM(M, a)
     pam2 = M_PAM(M, 1 - a)
 
     qam = orthogonalComposition(pam1, pam2)
+
+    # printConstellationMap(qam, "Two Uniform M-PAM Composition", "ortho")
 
     messageUser1 = rand(1 : pam1.M, messageLength)
     messageUser2 = rand(1 : pam2.M, messageLength)
@@ -49,12 +51,22 @@ function orthogonalSimulation(a, messageLength, print = true)
         push!(SEP2, length(findall(!iszero, demodUser2 - messageUser2)) / length(messageUser2))
     end
 
+    theoreticalSEP1 = 2 * (pam1.M - 1) / pam1.M * gaussianQ.(sqrt.(4 * pam1.Es ./ (N0)))
+    theoreticalSEP2 = 2 * (pam2.M - 1) / pam2.M * gaussianQ.(sqrt.(4 * pam2.Es ./ (c*N0)))
     # Remove zero-value SEP entries for log-scale plotting
     SEP1[SEP1 .< sepLimit ] .= sepLimit
     SEP2[SEP2 .< sepLimit ] .= sepLimit
     if print
+        # p = plot(SNR, theoreticalSEP1, gridlinewidth=1, yaxis=(:log10, [sepLimit, :auto]),
+        #             label="Theoretical User₁ SEP", linestyle=:dash)
+        # p = plot!(SNR, theoreticalSEP2, gridlinewidth=1, yaxis=(:log10, [sepLimit, :auto]),
+        #             label="Theoretical User₂ SEP", linestyle=:dash)
         p = plot(SNR, SEP1, gridlinewidth=1, yaxis=(:log10, [sepLimit, :auto]), 
                     label="User₁ SEP")
+        p = scatter!(SNR, SEP1, gridlinewidth=1, yaxis=(:log10, [sepLimit, :auto]),
+                    label="")
+        p = scatter!(SNR, SEP2, gridlinewidth=1, yaxis=(:log10, [sepLimit, :auto]),
+                    label="")
         p = plot!(SNR, SEP2, gridlinewidth=1, yaxis=(:log10, [sepLimit, :auto]), 
                     label="User₂ SEP", ylabel="SEP", xlabel="SNR (dB)",
                     title="Multiple Access SEP vs SNR for a=$a")

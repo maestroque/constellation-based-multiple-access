@@ -31,8 +31,18 @@ mutable struct M_QAM <: Constellation
     symbols::Vector{ComplexF32}
 end
 
-function printConstellationMap(c::Constellation)
-    p = scatter(real(c.symbols), imag(c.symbols))
+function printConstellationMap(c::Constellation, tit="Constellation Plot", mode="default")
+    if mode == "default"
+        p = scatter(real(c.symbols), imag(c.symbols), xlabel="ℜ{s}", ylabel="ℑ{s}",
+                title=tit, label="", gridlinewidth=2)    
+    elseif mode == "ortho"
+        p = scatter(zeros(size(imag(c.symbols))), imag(c.symbols), mc=:red, label="PAM₂")
+        p = scatter!(real(c.symbols), zeros(size(real(c.symbols))), mc=:purple , label="PAM₁")        
+        p = scatter!(real(c.symbols), imag(c.symbols), xlabel="ℜ{s}", ylabel="ℑ{s}",
+                title=tit, label="QAM", gridlinewidth=2, mc=:blue)
+    elseif mode == "rotated"
+        # TODO
+    end
     display(p)
 end
 

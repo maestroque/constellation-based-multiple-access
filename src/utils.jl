@@ -1,5 +1,6 @@
 using Random, Distributions
 using Revise
+using SpecialFunctions
 includet("PAM.jl")
 
 function addNoise(signal::Vector{<:Complex}, μ, σ)
@@ -30,4 +31,8 @@ function MLD(signal::Vector, c::Constellation)
     end
 
     return estimation
+end
+
+function gaussianQ(x)
+    return 1 / 2 * erfc(x / √2)
 end

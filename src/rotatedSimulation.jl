@@ -57,11 +57,17 @@ function rotationSimulation(θ, messageLength, print = true)
     if print
         p = plot(SNR, SEP1, gridlinewidth=1, yaxis=(:log10, [sepLimit, :auto]), 
                     label="User₁ SEP")
+        p = scatter!(SNR, SEP1, gridlinewidth=1, yaxis=(:log10, [sepLimit, :auto]),
+                    label="")
+        p = scatter!(SNR, SEP2, gridlinewidth=1, yaxis=(:log10, [sepLimit, :auto]),
+                    label="")
         p = plot!(SNR, SEP2, gridlinewidth=1, yaxis=(:log10, [sepLimit, :auto]), 
                     label="User₂ SEP", ylabel="SEP", xlabel="SNR (dB)",
-                    title="Multiple Access SEP vs SNR for θ=$θ")
+                    title="Multiple Access SEP vs SNR for θ=$(round(rad2deg(θ), digits=3))")
         display(p)
     end
 
     return SEP1, SEP2
 end
+
+rotationSimulation(0.2, 500)

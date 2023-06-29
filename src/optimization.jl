@@ -19,22 +19,15 @@ println("Multiple Access (Orthogonal PAMs): Most user fairness for a = $(A[argmi
 p = plot(A, similarityOrth, xlabel="Value of a", ylabel="User SEP similarity measure")
 display(p)
 
+similarityRot = []
+for θ in Θ
+    (sep1, sep2) = rotationSimulation(θ, messageLength, false)
+    push!(similarityRot, sum(abs.(sep1 .^ 2 - sep2 .^ 2))) 
+end
 
-# s = []
-# for i in range(1, iterations)
-    similarityRot = []
-    for θ in Θ
-        (sep1, sep2) = rotationSimulation(θ, messageLength, false)
-        push!(similarityRot, sum(abs.(sep1 .^ 2 - sep2 .^ 2))) 
-    end
-    # push!(s, Θ[argmin(similarityRot)])    
-# end
-
-
-println("Multiple Access (QAM Rotation): Most user fairness for θ = $(rad2deg(Θ[argmin(similarityRot)])) degrees")
+println("Multiple Access (QAM Rotation): Most user fairness for θ = $(round(rad2deg(Θ[argmin(similarityRot)]), digits=3)) degrees")
 p = plot(Θ, similarityRot, xlabel="Value of θ (rad)", ylabel="User SEP similarity measure")
 display(p)
-# println("θ = $(rad2deg(mean(s)))")
 
 orthogonalSimulation(A[argmin(similarityOrth)], messageLength);
 rotationSimulation(Θ[argmin(similarityRot)], messageLength);
