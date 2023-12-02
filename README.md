@@ -85,8 +85,8 @@ around 0.45 rad or 26.35 $^\circ$ . This result is also proved analytically and 
 ## Conclusions
 
 <p float="left">
-  <img src="media/orth-opt.png" width="50%" />
-  <img src="media/rot-opt.png" width="50%" />
+  <img src="media/orth-opt.png" width="49%" />
+  <img src="media/rot-opt.png" width="49%" />
 </p>
 
 The first system seems more efficient than the second because:
