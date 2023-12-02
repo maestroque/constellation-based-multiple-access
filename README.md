@@ -25,14 +25,18 @@ Given a sample system of
 
 Starting with an $a = 0.25$, this Con-NOMA contellation is produced
 
-![Uniform 4-PAM Composition](media/orth-const.png)
+<div style="text-align:center">
+    <img src="media/orth-const.png" width="80%" />
+</div>
 
 A simulation on a range of SNR levels will be ran in
 order to characterize the SEP (Symbol Error Probability) values of each user. In our model, it is assumed that the two users receive the signal at different noise levels.
 More specifically the noise added to the received complex symbol follows a complex normal
 distribution which is $CN(0, \frac{N_0}{2})$ for User 1 and CN(0, \frac{cN_0}{2}) for User 2, with $c = 0.5$. A Maximum Likelihood Detector (MLD) is used for symbol detection.
 
-![Multiple Access SEP vs SNR for a = 0.25](media/orth-25.png)
+<div style="text-align:center">
+    <img src="media/orth-25.png" width="80%" />
+</div>
 
 #### Optimization for User Fairness
 
@@ -43,11 +47,12 @@ be conducted for multiple values of $a \in (0, 1)$ where the optimization object
 
 $$ \mathcal{M} = \sum_{i = 0}^{20} |SEP_1(i) - SEP_2(i)| $$
 
-![Objective Function Minimization](media/a-fair.png)
+<div style="text-align:center">
+    <img src="media/a-fair.png" width="49%" />
+    <img src="media/orth-opt.png" width="49%" />
+</div>
 
-A value of $a = 0.78$ seems to be optimal for user fairness in this method also seen in the plot below
-
-![Multiple Access SEP vs SNR for a = 0.78](media/orth-opt.png)
+A value of $a = 0.78$ seems to be optimal for user fairness in this method also seen in the plot above
 
 ## Constellation Rotation Multiple Access
 
@@ -67,17 +72,20 @@ function rotationComposition(c::Constellation, θ::Real)
 Thus, given the system’s requirements an orthogonal uniform 4-QAM constellation will be
 used. Below a sample constructed constellation is shown, for a rotation angle θ = 0.2 rad
 
-![Rotation Composed Constellation](media/rotated-const.png)
+<!-- ![Rotation Composed Constellation](media/rotated-const.png) -->
+<div style="text-align:center">
+    <img src="media/rotated-const.png" width="49%" />
+    <img src="media/rot-02.png" width="49%" />
+</div>
 
-A SEP simulation is also conducted
-
-![SEP vs SNR for theta = 0.2 rad](media/rot-02.png)
 
 #### Optimization for User Fairness
 
-n the same way as for the previous system, we are going to conduct simulations for the optimization of the value of the rotation angle θ. We are going to use the same measure ($\mathcal{M}$)
+In the same way as for the previous system, we are going to conduct simulations for the optimization of the value of the rotation angle θ. We are going to use the same measure ($\mathcal{M}$)
 
-![Objective Function Minimization](media/theta-fair.png)
+<div style="text-align:center">
+    <img src="media/theta-fair.png" width="80%" />
+</div>
 
 As it is also shown in the figure above, the optimal value of θ that ensures user fairness is
 around 0.45 rad or 26.35 $^\circ$ . This result is also proved analytically and presented in [^1]
